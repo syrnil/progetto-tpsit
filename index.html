@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Registro Laboratorio informatica</title>
+    <style>
+        body { font-family: sans-serif; max-width: 800px; margin: 20px auto; padding: 20px; line-height: 1.6; }
+        .box { border: 1px solid #ccc; padding: 15px; margin-bottom: 20px; border-radius: 5px; background: #f9f9f9; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        th { background-color: #eee; }
+        .btn-del { color: red; text-decoration: none; font-weight: bold; }
+        input { padding: 8px; margin-right: 10px; }
+        button { padding: 8px 15px; cursor: pointer; background: #28a745; color: white; border: none; border-radius: 3px; }
+    </style>
+</head>
+<body>
+    <h1>Registro Attività Laboratorio informatica</h1>
+
+    <div class="box">
+        <h3>Nuova Voce nel Registro</h3>
+        <form action="/api/add" method="POST">
+            <input type="text" name="studente" placeholder="Nome Studente" required>
+            <input type="text" name="attivita" placeholder="Attività svolta" required>
+            <button type="submit">Salva nella cronologia</button>
+        </form>
+    </div>
+
+    <div class="box">
+        <h3>Attività Registrate</h3>
+        <table id="tabellaLogs">
+            <thead>
+                <tr>
+                    <th>Data/Ora</th>
+                    <th>Studente</th>
+                    <th>Attività</th>
+                    <th>Azioni</th>
+                </tr>
+            </thead>
+            <tbody id="corpoTabella"></tbody>
+        </table>
+    </div>
+
+    <script>
+        async function caricaDati() {
+            const risposta = await fetch('/api/logs');
+            const logs = await risposta.json();
+            const corpo = document.getElementById('corpoTabella');
+            
+            // Creiamo le righe della tabella. Nota: mettiamo i più recenti in alto
+            corpo.innerHTML = logs.reverse().map(l => `
+                <tr>
+                    <td>${l.data}</td>
+                    <td>${l.studente}</td>
+                    <td>${l.attivita}</td>
+                    <td><a href="/api/delete/${l.id}" class="btn-del">Elimina</a></td>
+                </tr>
+            `).join('');
+        }
+        caricaDati();
+    </script>
+</body>
+</html>
